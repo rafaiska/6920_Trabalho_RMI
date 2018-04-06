@@ -1,10 +1,15 @@
-public class TicTacToeBoard {
+package server;
+
+import java.rmi.Remote;
+
+public class TicTacToeBoard implements Remote {
     private char[][] board;
     private char current_player;
     private boolean have_winner;
 
-    public void TitcTacToeBoard()
+    public TicTacToeBoard()
     {
+        super();
         this.board = new char[3][3];
         // Clear the board
         for(int i = 0; i<3; ++i)
