@@ -1,15 +1,20 @@
 package server;
 
-import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 
-public class TicTacToeBoard implements Remote {
+public class TicTacToeBoard extends UnicastRemoteObject implements TicTacToeInterface {
     private char[][] board;
     private char current_player;
     private boolean have_winner;
+    private boolean ready;
+    char[] playerSymbols;
 
-    public TicTacToeBoard()
-    {
+    public TicTacToeBoard() throws RemoteException {
         super();
+        playerSymbols = new char[2];
+        playerSymbols[0] = 'o';
+        playerSymbols[1] = 'x';
         this.board = new char[3][3];
         // Clear the board
         for(int i = 0; i<3; ++i)
@@ -18,6 +23,7 @@ public class TicTacToeBoard implements Remote {
 
         this.setCurrent_player('x');
         this.setHave_winner(false);
+        ready = false;
     }
 
     public String toString()
@@ -107,5 +113,57 @@ public class TicTacToeBoard implements Remote {
 
     public void setHave_winner(boolean have_winner) {
         this.have_winner = have_winner;
+    }
+
+    @Override
+    public char playerTurn() {
+        return current_player;
+    }
+
+    @Override
+    public String getBoardString() {
+        return toString();
+    }
+
+    @Override
+    public boolean play(int linha, int coluna, char playerSymbol) {
+        if(playerSymbol != current_player)
+            return false;
+        if(linha < 0 || linha > 2)
+            return false;
+        if(coluna < 0 || coluna > 2)
+            return false;
+        if(board[linha][coluna] != ' ')
+            return false;
+
+        board[linha][coluna] = playerSymbol;
+        if(current_player == 'x')
+            current_player = 'o';
+        else
+            current_player = 'x';
+        return true;
+    }
+
+    @Override
+    public char getPlayerSymbol() {
+        char retval = ' ';
+        if (playerSymbols[1] != ' ') {
+            retval = playerSymbols[1];
+            playerSymbols[1] = ' ';
+        }
+        else if (playerSymbols[0] != ' ') {
+            retval = playerSymbols[0];
+            playerSymbols[0] = ' ';
+            ready = true;
+        }
+
+        return retval;
+    }
+
+    public void run()
+    {
+        while(!have_winner)
+        {
+        }
     }
 }
